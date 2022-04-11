@@ -1,0 +1,22 @@
+{% extends "book/librairy.html" %}
+{% block content %}
+    <h1>Upload Book</h1>
+    <form  method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <table class="w-50 table table-light">
+            {% for field in upload %}
+                
+                {% for error in field.errors %}
+                    <div class="alert alert-danger">
+                        <strong>{{ error|escape }}</strong>
+                    </div>
+                {% endfor %}
+                <tr>
+                    <th>{{ field.label }}</th>
+                    <td>{{ field }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        <button type="submit" class="btn btn-lg btn-warning">Submit</button>
+    </form>
+{% endblock content %}
