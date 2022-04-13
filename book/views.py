@@ -44,10 +44,10 @@ def update_book(request, book_id):
         if book_form.is_valid():
             print("Valid Update form")
             #get image path
-            image_path = book_sel.picture.path
-            if os.path.exists(image_path):
-                # remove old image if it exist
-                os.remove(image_path)
+            # image_path = book_sel.picture.path
+            # if os.path.exists(image_path):
+            #     # remove old image if it exist
+            #     os.remove(image_path)
             book_form.save()
             return redirect('home')
         else:
