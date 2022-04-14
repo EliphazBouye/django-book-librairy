@@ -17,6 +17,12 @@
                 </tr>
             {% endfor %}
         </table>
+        {% if categorys %}
+            {% for field in categorys %}
+                {{ field.label }}
+                {{ field }}
+            {% endfor %}
+        {% endif %}
         <button type="submit" class="btn btn-lg btn-warning">Submit</button>
     </form>
 {% endblock content %}
