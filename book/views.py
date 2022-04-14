@@ -1,5 +1,5 @@
 import os
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render , get_object_or_404, get_list_or_404
 from .models import Book
 from .forms import BookForm
 from django.http import HttpResponse
@@ -11,11 +11,11 @@ def home(request):
 
 # add new book and upload image of the book
 def upload(request):
-    upload = BookForm()
+    
     #check the http method
-    if request.method == 'POST' or None:
+    if request.method == 'POST':
         # get post fields and file field submited
-        upload = BookForm(request.POST or None, request.FILES or None)
+        upload = BookForm(request.POST, request.FILES)
         # check if form is valid
         if upload.is_valid():
             print("Valid form")
@@ -29,28 +29,35 @@ def upload(request):
            
     else:
         # if use want add book form 
+        upload = BookForm()
         return render(request, 'book/upload_form.html', {'upload' : upload})
 
 #update a book
 def update_book(request, book_id):
     book_id = int(book_id)
     #get a book from id
-    try: 
-        book_sel = Book.objects.get(id = book_id)
-    except Book.DoesNotExist:
-        return redirect('home')
-    book_form = BookForm(request.POST or None, request.FILES or None, instance= book_sel)
     
-    #check if book form is valid
-    if book_form.is_valid():
-        #get image path
-        image_path = book_sel.picture.path
-        if os.path.exists(image_path):
-            # remove old image if it exist
-            os.remove(image_path)
-        book_form.save()
+    if request.method == 'POST':
+        book_sel =  get_object_or_404(Book,pk=book_id) 
+        book_form = BookForm(data=request.POST,files=request.FILES,instance= book_sel)
+        #check if book form is valid
+        if book_form.is_valid():
+            print("Valid Update form")
+            #get image path
+            # image_path = book_sel.picture.path
+            # if os.path.exists(image_path):
+            #     # remove old image if it exist
+            #     os.remove(image_path)
+            book_form.save()
+            return redirect('home')
+        else:
+            print("Invalid update form")
+            print(book_form)
+            print(book_form.errors)
+    else:
+        book_sel =  get_object_or_404(Book,pk=book_id) 
+        book_form = BookForm(instance= book_sel)
         
-        return redirect('home')
     return render(request, 'book/upload_form.html', {'upload': book_form})
 
 def delete_book(request, book_id):
